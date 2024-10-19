@@ -10,7 +10,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createEditCabin } from "../../services/apiCabins";
 import toast from "react-hot-toast";
 
-function CreateCabinForm({ cabinToEdit }) {
+function CreateCabinForm({ cabinToEdit = {} }) {
   const { id: editId, ...editValues } = cabinToEdit;
   const isEditSession = Boolean(editId);
   const {
@@ -27,7 +27,7 @@ function CreateCabinForm({ cabinToEdit }) {
   const { isPending: isCreating, mutate: createCabin } = useMutation({
     mutationFn: createEditCabin,
     onSuccess: () => {
-      toast.success("Cabin created successfully");
+      toast.success("New cabin created successfully");
       queryClient.invalidateQueries("cabins");
       resetForm();
     },
@@ -47,9 +47,6 @@ function CreateCabinForm({ cabinToEdit }) {
       toast.error(error.message);
     },
   });
-  const onError = () => {
-    alert(JSON.stringify(errors, null, 3));
-  };
 
   const onSubmit = (data) => {
     const image = typeof data.image === "string" ? data.image : data.image[0];
@@ -58,9 +55,9 @@ function CreateCabinForm({ cabinToEdit }) {
     } else createCabin({ ...data, image });
   };
 
-  const isWorking = isEditing || isCreating;
+  const isWorking = isCreating || isEditing;
   return (
-    <Form onSubmit={handleSubmit(onSubmit, onError)}>
+    <Form onSubmit={handleSubmit(onSubmit)}>
       <FormRow label="Cabin name" error={errors?.name?.message}>
         <Input
           type="text"
