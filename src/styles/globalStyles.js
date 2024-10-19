@@ -60,7 +60,7 @@ FOR DARK MODE
 
  */
 
-  
+/*   
 --color-grey-0: #18212f;
 --color-grey-50: #111827;
 --color-grey-100: #1f2937;
@@ -95,7 +95,7 @@ FOR DARK MODE
 --shadow-lg: 0 2.4rem 3.2rem rgba(0, 0, 0, 0.4);
 
 --image-grayscale: 10%;
---image-opacity: 90%;
+--image-opacity: 90%; */
 
 
 }
