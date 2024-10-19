@@ -12,6 +12,7 @@ import PageNotFound from "./pages/PageNotFound";
 import GlobalStyles from "./styles/globalStyles";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { Toaster } from "react-hot-toast";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -22,7 +23,7 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ReactQueryDevtools initialIsOpen={false} />
+      <ReactQueryDevtools initialIsOpen={true} />
       <GlobalStyles />
       <BrowserRouter>
         <Routes>
@@ -38,6 +39,32 @@ function App() {
           <Route path="login" element={<Login />} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>
+        <Toaster
+          position="top-center"
+          reverseOrder={false}
+          containerStyle={{
+            margin: "8px",
+          }}
+          gutter={ 12 }
+          
+          toastOptions={ {
+            
+            success: {
+              duration: 3000,
+            },
+            error: {
+              duration: 5000,
+            },
+            style: {
+              borderRadius: "8px",
+              padding: "16px 24px",
+              fontSize: "16px",
+              maxWidth: "500px",
+              backgroundColor: "var(--color-grey-0)",
+              color: "var(--color-grey-700)",
+            },
+          }}
+        />
       </BrowserRouter>
     </QueryClientProvider>
   );
