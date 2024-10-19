@@ -1,6 +1,8 @@
 /* eslint-disable react/prop-types */
 import styled from "styled-components";
 import Button from "../../ui/Button";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { deleteCabin } from "../../services/apiCabins";
 const TableRow = styled.div`
   display: grid;
   grid-template-columns: 0.6fr 1.8fr 2.2fr 1fr 1fr 1fr 2fr;
@@ -41,15 +43,29 @@ const Discount = styled.div`
 `;
 
 const CabinRow = ({ cabin }) => {
+  const { id, image, name, description, regularPrice, maxCapacity, discount } =
+    cabin;
+  const queryClient = useQueryClient();
+  const { isPending: isDeleting, mutate: onDelete } = useMutation({
+    mutationFn: deleteCabin,
+    onSuccess: () => {
+      queryClient.invalidateQueries("cabins");
+    },
+  });
   return (
     <TableRow>
-      <Img src={cabin.image} alt={cabin.name} />
-      <Cabin>{cabin.name}</Cabin>
-      <Discount>{cabin.description}</Discount>
-      <Price>{cabin.regularPrice} USD</Price>
-      <Discount>{cabin.maxCapacity}</Discount>
-      <Discount>{cabin.discount}%</Discount>
-      <Button variation="danger" size="medium">
+      <Img src={image} alt={name} />
+      <Cabin>{name}</Cabin>
+      <Discount>{description}</Discount>
+      <Price>{regularPrice} USD</Price>
+      <Discount>{maxCapacity}</Discount>
+      <Discount>{discount}%</Discount>
+      <Button
+        variation="danger"
+        size="medium"
+        disabled={isDeleting}
+        onClick={() => onDelete(id)}
+      >
         Delete
       </Button>
     </TableRow>
