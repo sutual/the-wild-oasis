@@ -49,8 +49,8 @@ const CabinRow = ({ cabin }) => {
       <Price>{cabin.regularPrice} USD</Price>
       <Discount>{cabin.maxCapacity}</Discount>
       <Discount>{cabin.discount}%</Discount>
-      <Button variation="primary" size="medium">
-        Book Now
+      <Button variation="danger" size="medium">
+        Delete
       </Button>
     </TableRow>
   );

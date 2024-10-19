@@ -38,13 +38,13 @@ const CabinsTable = () => {
   return (
     <Table>
       <TableHeader>
-        <div>Id</div>
+        <div></div>
         <div>Name</div>
         <div>Description</div>
         <div>Price</div>
         <div>Capacity</div>
         <div>Discount</div>
-        <div>Actions</div>
+        <div></div>
       </TableHeader>
       {data.map((cabin) => (
         <CabinRow key={cabin.id} cabin={cabin} />
