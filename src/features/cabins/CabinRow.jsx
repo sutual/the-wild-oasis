@@ -3,9 +3,12 @@ import styled from "styled-components";
 import Button from "../../ui/Button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteCabin } from "../../services/apiCabins";
+import toast from "react-hot-toast";
+import { useState } from "react";
+import CreateCabinForm from "./CreateCabinForm";
 const TableRow = styled.div`
   display: grid;
-  grid-template-columns: 0.6fr 1.8fr 2.2fr 1fr 1fr 1fr 2fr;
+  grid-template-columns: 0.6fr 1.8fr 2.2fr 1fr 1fr 2fr;
   column-gap: 2.4rem;
   align-items: center;
   padding: 1.4rem 2.4rem;
@@ -42,33 +45,55 @@ const Discount = styled.div`
   color: var(--color-green-700);
 `;
 
+const ActionContainer = styled.div`
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+  justify-content: center;
+`;
+
 const CabinRow = ({ cabin }) => {
-  const { id, image, name, description, regularPrice, maxCapacity, discount } =
-    cabin;
+  const { id, image, name, regularPrice, maxCapacity, discount } = cabin;
+  const [showForm, setShowForm] = useState(false);
   const queryClient = useQueryClient();
   const { isPending: isDeleting, mutate: onDelete } = useMutation({
     mutationFn: deleteCabin,
     onSuccess: () => {
+      toast.success("Cabin deleted successfully");
       queryClient.invalidateQueries("cabins");
+    },
+    onError: (error) => {
+      toast.error(error.message);
     },
   });
   return (
-    <TableRow>
-      <Img src={image} alt={name} />
-      <Cabin>{name}</Cabin>
-      <Discount>{description}</Discount>
-      <Price>{regularPrice} USD</Price>
-      <Discount>{maxCapacity}</Discount>
-      <Discount>{discount}%</Discount>
-      <Button
-        variation="danger"
-        size="medium"
-        disabled={isDeleting}
-        onClick={() => onDelete(id)}
-      >
-        Delete
-      </Button>
-    </TableRow>
+    <>
+      <TableRow>
+        <Img src={image} alt={name} />
+        <Cabin>{name}</Cabin>
+        <Discount> Fits upto {maxCapacity} guests</Discount>
+        <Price>{regularPrice} USD</Price>
+        <Discount>{discount}%</Discount>
+        <ActionContainer>
+          <Button
+            variation="secondary"
+            size="medium"
+            onClick={() => setShowForm((show) => !show)}
+          >
+            Edit
+          </Button>
+          <Button
+            variation="danger"
+            size="medium"
+            disabled={isDeleting}
+            onClick={() => onDelete(id)}
+          >
+            Delete
+          </Button>
+        </ActionContainer>
+      </TableRow>
+      {showForm && <CreateCabinForm cabinToEdit={cabin} />}
+    </>
   );
 };
 
