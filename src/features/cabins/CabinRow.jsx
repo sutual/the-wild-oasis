@@ -1,11 +1,9 @@
 /* eslint-disable react/prop-types */
 import styled from "styled-components";
 import Button from "../../ui/Button";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteCabin } from "../../services/apiCabins";
-import toast from "react-hot-toast";
 import { useState } from "react";
 import CreateCabinForm from "./CreateCabinForm";
+import { useDeleteCabin } from "./useCabinDelete";
 const TableRow = styled.div`
   display: grid;
   grid-template-columns: 0.6fr 1.8fr 2.2fr 1fr 1fr 2fr;
@@ -55,25 +53,15 @@ const ActionContainer = styled.div`
 const CabinRow = ({ cabin }) => {
   const { id, image, name, regularPrice, maxCapacity, discount } = cabin;
   const [showForm, setShowForm] = useState(false);
-  const queryClient = useQueryClient();
-  const { isPending: isDeleting, mutate: onDelete } = useMutation({
-    mutationFn: deleteCabin,
-    onSuccess: () => {
-      toast.success("Cabin deleted successfully");
-      queryClient.invalidateQueries("cabins");
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
+  const { isDeleting, deleteCabin } = useDeleteCabin();
   return (
     <>
       <TableRow>
         <Img src={image} alt={name} />
         <Cabin>{name}</Cabin>
-        <Discount> Fits upto {maxCapacity} guests</Discount>
+        <div> Fits upto {maxCapacity} guests</div>
         <Price>{regularPrice} USD</Price>
-        <Discount>{discount}%</Discount>
+        {discount ? <Discount>{discount}%</Discount> : <span>&mdash;</span>}
         <ActionContainer>
           <Button
             variation="secondary"
@@ -86,7 +74,7 @@ const CabinRow = ({ cabin }) => {
             variation="danger"
             size="medium"
             disabled={isDeleting}
-            onClick={() => onDelete(id)}
+            onClick={() => deleteCabin(id)}
           >
             Delete
           </Button>
