@@ -4,6 +4,8 @@ import Button from "../../ui/Button";
 import { useState } from "react";
 import CreateCabinForm from "./CreateCabinForm";
 import { useDeleteCabin } from "./useCabinDelete";
+import { useCreateCabin } from "./useCreateCabin";
+import { HiPencil, HiSquare2Stack, HiTrash } from "react-icons/hi2";
 const TableRow = styled.div`
   display: grid;
   grid-template-columns: 0.6fr 1.8fr 2.2fr 1fr 1fr 2fr;
@@ -51,9 +53,23 @@ const ActionContainer = styled.div`
 `;
 
 const CabinRow = ({ cabin }) => {
-  const { id, image, name, regularPrice, maxCapacity, discount } = cabin;
+  const { id, image, name, regularPrice, maxCapacity, discount, description } =
+    cabin;
   const [showForm, setShowForm] = useState(false);
   const { isDeleting, deleteCabin } = useDeleteCabin();
+  const { isCreating, createCabin } = useCreateCabin();
+  const handleDuplicate = () => {
+    createCabin({
+      name: `Copy of ${name}`,
+      image,
+      regularPrice,
+      maxCapacity,
+      discount,
+      description,
+    });
+  };
+
+  const isWorking = isDeleting || isCreating;
   return (
     <>
       <TableRow>
@@ -63,20 +79,23 @@ const CabinRow = ({ cabin }) => {
         <Price>{regularPrice} USD</Price>
         {discount ? <Discount>{discount}%</Discount> : <span>&mdash;</span>}
         <ActionContainer>
+          <button disabled={isWorking} onClick={handleDuplicate}>
+            <HiSquare2Stack size={20} />
+          </button>
           <Button
             variation="secondary"
             size="medium"
             onClick={() => setShowForm((show) => !show)}
           >
-            Edit
+            <HiPencil/>
           </Button>
           <Button
             variation="danger"
             size="medium"
-            disabled={isDeleting}
+            disabled={isWorking}
             onClick={() => deleteCabin(id)}
           >
-            Delete
+            <HiTrash/>
           </Button>
         </ActionContainer>
       </TableRow>
