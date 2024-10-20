@@ -47,7 +47,6 @@ export async function createEditCabin(newCabin, id) {
     .from("cabins_image")
     .upload(imageName, newCabin.image);
   if (storageError) {
-    alert(JSON.stringify(data, null, 3));
     const { error } = await supabase
       .from("cabins")
       .delete()
