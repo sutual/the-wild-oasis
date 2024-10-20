@@ -40,26 +40,25 @@ export async function createEditCabin(newCabin, id) {
     throw new Error("Cabin could not be " + (editing ? "edited" : "created"));
   }
 
-  let storage = supabase.storage.from("cabins_image");
 
-  if (isImageFile) {
-    const { data, error: storageError } = await storage.upload(
-      imageName,
-      newCabin.image
-    );
-    if (storageError) {
-      alert(JSON.stringify(data, null, 3));
-      const { error } = await supabase
-        .from("cabins")
-        .delete()
-        .eq("id", data[0].id);
-      if (error) {
-        throw new Error("Cabin could not be deleted");
-      }
-      throw new Error(
-        "Image could not be uploaded and the cabin could not be created"
-      );
+  if (!isImageFile) return data;
+
+  const { error: storageError } = await supabase.storage
+    .from("cabins_image")
+    .upload(imageName, newCabin.image);
+  if (storageError) {
+    alert(JSON.stringify(data, null, 3));
+    const { error } = await supabase
+      .from("cabins")
+      .delete()
+      .eq("id", data[0].id);
+    if (error) {
+      throw new Error("Cabin could not be deleted");
     }
+    throw new Error(
+      "Image could not be uploaded and the cabin could not be created"
+    );
   }
+  
   return data;
 }
