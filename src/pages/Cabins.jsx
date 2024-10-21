@@ -1,5 +1,6 @@
 import Heading from "../ui/Heading";
 import Row from "../ui/Row";
+import Menus from "../ui/Menus";
 import CabinsTable from "../features/cabins/CabinTable";
 import AddCabin from "../features/cabins/AddCabin";
 function Cabins() {
@@ -10,7 +11,9 @@ function Cabins() {
         <p>Filter/Sort</p>
       </Row>
       <Row type="vertical">
-        <CabinsTable />
+        <Menus>
+          <CabinsTable />
+        </Menus>
         <AddCabin />
       </Row>
     </>

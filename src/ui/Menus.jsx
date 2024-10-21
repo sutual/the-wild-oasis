@@ -1,4 +1,9 @@
+/* eslint-disable react/prop-types */
+import { createContext, useContext, useState } from "react";
+import { createPortal } from "react-dom";
+import { FaEllipsisV } from "react-icons/fa";
 import styled from "styled-components";
+import useOutsideClick from "../hooks/useOutSideClick";
 
 const StyledMenu = styled.div`
   display: flex;
@@ -60,3 +65,83 @@ const StyledButton = styled.button`
     transition: all 0.3s;
   }
 `;
+
+const MenuContext = createContext({
+  openId: "",
+  open: () => {},
+  close: () => {},
+  position: "",
+  setPosition: () => {},
+});
+const Menus = ({ children }) => {
+  const [openId, setOpenId] = useState("");
+  const [position, setPosition] = useState({});
+  const open = setOpenId;
+  const close = () => setOpenId("");
+
+  return (
+    <MenuContext.Provider
+      value={{ openId, open, close, position, setPosition }}
+    >
+      <StyledMenu> {children} </StyledMenu>
+    </MenuContext.Provider>
+  );
+};
+
+const Toggle = ({ id }) => {
+  const { open, openId, setPosition } = useContext(MenuContext);
+  const handleClick = (e) => {
+    open(!openId || openId !== id ? id : "");
+    const rect = e.target.closest("button").getBoundingClientRect();
+    setPosition({
+      x: window.innerWidth - rect.width - rect.x,
+      y: rect.y + rect.height + 8,
+    });
+  };
+  return (
+    <StyledToggle onClick={handleClick}>
+      <FaEllipsisV size={20} />
+    </StyledToggle>
+  );
+};
+
+const List = ({ children, id }) => {
+  const { openId, position, close } = useContext(MenuContext);
+  const { ref } = useOutsideClick(close);
+  if (openId !== id) return null;
+
+  return createPortal(
+    <StyledList position={position} ref={ref}>
+      <ul>{children}</ul>
+    </StyledList>,
+    document.body
+  );
+};
+
+const Button = ({ children, icon, onClick }) => {
+  const { close } = useContext(MenuContext);
+  const handleClick = () => {
+    onClick?.();
+    close();
+  };
+  return (
+    <li>
+      <StyledButton onClick={handleClick}>
+        {icon}
+        <span> {children}</span>
+      </StyledButton>
+    </li>
+  );
+};
+
+const Menu = ({ children }) => {
+  return <div>{children}</div>;
+};
+Menus.Toggle = Toggle;
+
+Menus.List = List;
+
+Menus.Button = Button;
+
+Menus.Menu = Menu;
+export default Menus;
